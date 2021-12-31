@@ -1,0 +1,31 @@
+---
+
+# The directory that the external hard drive will be mounted to.
+# In practice, this will be a 8TB or larger USB drive.
+bacula_backup_dir: /srv/backup
+
+# The block device or filesystem to mount at `bacula_backup_dir`.
+# It's recommended to replace this with a UUID to avoid weirdness
+# if more than 1 USB drive is plugged in. Run `lsblk -f /dev/sda`
+# to get that quickly.
+bacula_block_device: /dev/sda1
+
+bacula_director_name: changeme-dir
+bacula_director_monitor_name: changeme-mon
+bacula_file_daemon_name: changeme-fd
+bacula_storage_daemon_name: changeme-sd
+
+#
+# Bacula Passwords
+#
+bacula_director_password: "Director!ChangeMe"
+bacula_director_monitor_password: "Director!ChangeMe!RO"
+
+bacula_storage_daemon_password: "StorageDaemon!ChangeMe"
+bacula_storage_daemon_monitor_password: "StorageDaemon!ChangeMe!RO"
+
+bacula_file_daemon_password: 'FileDaemon!ChangeMe'
+bacula_file_daemon_monitor_password: 'FileDaemon!ChangeMe!RO'
+
+# Password for the postgresql database for user `bacula`
+bacula_catalog_password: "Catalog!ChangeMe"
