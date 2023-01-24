@@ -40,7 +40,7 @@ Director {
 FileDaemon {                          # this is me
   Name = {{ bacula_file_daemon_name }}
   FDport = 9102                  # where we listen for the director
-  WorkingDirectory = /var/lib/bacula
+  WorkingDirectory = {{ bacula_working_directory }}
   Pid Directory = /run/bacula
   Maximum Concurrent Jobs = 20
   Plugin Directory = /usr/lib/bacula

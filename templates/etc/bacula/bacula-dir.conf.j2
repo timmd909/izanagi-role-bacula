@@ -24,7 +24,7 @@ Director {                            # define myself
   Name = {{ bacula_director_name }}
   DIRport = 9101                # where we listen for UA connections
   QueryFile = "/etc/bacula/scripts/query.sql"
-  WorkingDirectory = "/var/lib/bacula"
+  WorkingDirectory = "{{ bacula_working_directory }}"
   PidDirectory = "/run/bacula"
   Maximum Concurrent Jobs = 20
   Password = "{{ bacula_director_password }}"         # Console password
@@ -44,7 +44,7 @@ JobDefs {
   Pool = File
   SpoolAttributes = yes
   Priority = 10
-  Write Bootstrap = "/var/lib/bacula/%c.bsr"
+  Write Bootstrap = "{{ bacula_working_directory }}/%c.bsr"
 }
 
 
@@ -85,7 +85,7 @@ Job {
   RunBeforeJob = "/etc/bacula/scripts/make_catalog_backup.pl MyCatalog"
   # This deletes the copy of the catalog
   RunAfterJob  = "/etc/bacula/scripts/delete_catalog_backup"
-  Write Bootstrap = "/var/lib/bacula/%n.bsr"
+  Write Bootstrap = "{{ bacula_working_directory }}/%n.bsr"
   Priority = 11                   # run after main backup
 }
 
@@ -136,7 +136,7 @@ FileSet {
 #   files can be useful
 #
   Exclude {
-    File = /var/lib/bacula
+    File = {{ bacula_working_directory }}
     File = /nonexistant/path/to/file/archive/dir
     File = /proc
     File = /tmp
@@ -170,7 +170,7 @@ FileSet {
     Options {
       signature = MD5
     }
-    File = "/var/lib/bacula/bacula.sql"
+    File = "{{ bacula_working_directory }}/bacula.sql"
   }
 }
 
