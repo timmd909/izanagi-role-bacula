@@ -10,6 +10,10 @@ bacula_client: false
 # client or server.
 bacula_working_directory: /var/lib/bacula
 
+bacula_source_dir: /usr/local/src/bacula-community
+bacula_repo: http://gitlab.bacula.org/bacula-community-edition/bacula-community.git
+bacula_repo_version: Release-13.0.2
+
 bacula_backup_dir: /media/external
 
 # The block device or filesystem to mount at `bacula_backup_dir`.

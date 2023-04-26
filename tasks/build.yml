@@ -1,0 +1,22 @@
+---
+
+- name: Install necessary packages for Bacula
+  apt:
+    state: latest
+    name:
+      - build-essential
+      - postgresql
+      - libpq-dev
+
+      # Unsure of this one, but it was in an older
+      # version. Let's keep it in our hearts only for now...
+      #- python3-psycopg2
+
+- name: Clone Bacula Server
+  git:
+    clone: yes
+    dest: "{{ bacula_source_dir }}"
+    force: yes
+    recursive: yes
+    repo: "{{ bacula_repo }}"
+    version: "{{ bacula_repo_version }}"
