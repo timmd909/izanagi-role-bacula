@@ -7,10 +7,18 @@
       - build-essential
       - postgresql
       - libpq-dev
+      - liblzo2-dev
+      - libssl-dev
 
       # Unsure of this one, but it was in an older
       # version. Let's keep it in our hearts only for now...
       #- python3-psycopg2
+
+- name: Clear Bacula sources
+  file:
+    state: absent
+    path: "{{ bacula_source_dir }}"
+  when: bacula_force_rebuild
 
 - name: Clone Bacula Server
   git:
@@ -20,3 +28,64 @@
     recursive: yes
     repo: "{{ bacula_repo }}"
     version: "{{ bacula_repo_version }}"
+
+- name: Configure Bacula build (server)
+  shell:
+    chdir: "{{ bacula_source_dir }}/bacula"
+    cmd: >
+      ./configure
+      --enable-conio
+      --enable-smartalloc
+      --enable-static
+      --with-openssl
+      --with-postgresql
+      --with-systemd
+      "--with-dir-password={{ bacula_director_password | regex_replace ('"', '\\"') }}"
+      "--with-fd-password={{ bacula_file_daemon_password | regex_replace ('"', '\\"') }}"
+      "--with-sd-password={{ bacula_storage_daemon_password | regex_replace ('"', '\"') }}"
+      "--with-mon-dir-password={{ bacula_director_monitor_name | regex_replace ('"', '\"') }}"
+      "--with-mon-fd-password={{ bacula_file_daemon_monitor_password | regex_replace ('"', '\"') }}"
+      "--with-mon-sd-password={{ bacula_storage_daemon_monitor_password | regex_replace ('"', '\"') }}"
+    creates: "{{ bacula_source_dir }}/bacula/Makefile"
+  when: bacula_server
+
+- name: Configure Bacula build (client)
+  shell:
+    chdir: "{{ bacula_source_dir }}/bacula"
+    cmd: >
+      ./configure
+      --enable-client-only
+      --enable-conio
+      --enable-smartalloc
+      --enable-static
+      --with-openssl
+      --with-systemd
+      --with-fd-password={{ bacula_file_daemon_password | regex_replace ("'", "\\'") }}
+    creates: "{{ bacula_source_dir }}/bacula/Makefile"
+  when: bacula_client
+
+- name: Build Bacula
+  shell:
+    chdir: "{{ bacula_source_dir }}/bacula"
+    cmd: "make -j 4 && date > .successful-build"
+    creates: "{{ bacula_source_dir }}/bacula/.successful-build"
+
+- name: Install Bacula
+  shell:
+    chdir: "{{ bacula_source_dir }}/bacula"
+    cmd: make install && date > .successful-install
+    creates: "{{ bacula_source_dir }}/bacula/.successful-install"
+
+- name: Autostart daemons (server)
+  shell:
+    chdir: "{{ bacula_source_dir }}/bacula"
+    cmd: make install-autostart
+    creates: /etc/init.d/bacula-dir
+  when: bacula_server
+
+- name: Autostart file daemon (client)
+  shell:
+    chdir: "{{ bacula_source_dir }}/bacula"
+    cmd: make install-autostart-fd
+    creates: /etc/init.d/bacula-fd
+  when: bacula_client

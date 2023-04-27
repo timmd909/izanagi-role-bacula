@@ -15,14 +15,6 @@
     state: present
     line: "{{ bacula_block_device }} {{ bacula_backup_dir }} ext4 defaults,nosuid,nodev,nofail 0 4    # Backup volume"
 
-# - name: Configure default passwords
-#   template:
-#     src: etc/bacula/common_default_passwords.j2
-#     dest: /etc/bacula/common_default_passwords
-#     owner: root
-#     group: root
-#     mode: 0600
-#
 # - name: Configure Bacula Director
 #   template:
 #     src: etc/bacula/bacula-dir.conf.j2

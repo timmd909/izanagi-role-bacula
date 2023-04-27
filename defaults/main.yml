@@ -5,6 +5,9 @@ bacula_server: false
 # Set to `true` on all bacula clients
 bacula_client: false
 
+# Set to `true` to forcibilty rebuild Bacula
+bacula_force_rebuild: false
+
 # The working directory for Bacula where status files can be found.
 # This area will be shared by any Bacula daemon running on the
 # client or server.
@@ -21,7 +24,6 @@ bacula_backup_dir: /media/external
 # if more than 1 USB drive is plugged in. Run `lsblk -f /dev/sda`
 # to get that quickly.
 bacula_block_device: /dev/sda1
-
 
 # --------------------------------------------------------------------------- #
 # Bacula Daemon names
@@ -46,9 +48,6 @@ bacula_storage_daemon_monitor_password: "StorageDaemon!ChangeMe!RO"
 
 bacula_file_daemon_password: 'FileDaemon!ChangeMe'
 bacula_file_daemon_monitor_password: 'FileDaemon!ChangeMe!RO'
-
-# Password for the postgresql database for user `bacula`
-bacula_catalog_password: "Catalog!ChangeMe"
 
 # --------------------------------------------------------------------------- #
 # Bacula Backup Settings
@@ -75,9 +74,21 @@ bacula_clients:
     size: 500
 
   - name: "Example Desktop Client"
-    host: clientb
-    pool: ClientB
+    host: ClientB
+    pool: clientb
     ip: 192.168.1.101
     size: 1000
 
   # ... and so forth
+
+# --------------------------------------------------------------------------- #
+# Bacula database
+#
+# In practice, these would be all the same. These should probably go in
+# `group_vars/baculas`.
+# --------------------------------------------------------------------------- #
+
+bacula_database: bacula
+
+# Password for the postgresql database for user `bacula`
+bacula_catalog_password: "Catalog!ChangeMe"
