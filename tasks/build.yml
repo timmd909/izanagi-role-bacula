@@ -1,18 +1,27 @@
 ---
 
-- name: Install necessary packages for Bacula
+- name: Install necessary packages for Bacula (common)
   apt:
     state: latest
     name:
       - build-essential
-      - postgresql
-      - libpq-dev
       - liblzo2-dev
+      - libncurses-dev
       - libssl-dev
+      - libz3-dev
 
       # Unsure of this one, but it was in an older
       # version. Let's keep it in our hearts only for now...
       #- python3-psycopg2
+
+- name: Install necessary packages for Bacula (server)
+  apt:
+    state: present
+    name:
+      - cryptsetup
+      - libpq-dev
+      - postgresql
+  when: bacula_server
 
 - name: Clear Bacula sources
   file:
@@ -34,16 +43,20 @@
     chdir: "{{ bacula_source_dir }}/bacula"
     cmd: >
       ./configure
+      --sbindir=/opt/bacula/etc
+      --sysconfdir=/opt/bacula/etc
+      --with-pid-dir=/opt/bacula/working
+      --with-subsys-dir=/opt/bacula/working
+      --with-working-dir=/opt/bacula/working
       --enable-conio
       --enable-smartalloc
-      --enable-static
       --with-openssl
       --with-postgresql
       --with-systemd
       "--with-dir-password={{ bacula_director_password | regex_replace ('"', '\\"') }}"
       "--with-fd-password={{ bacula_file_daemon_password | regex_replace ('"', '\\"') }}"
       "--with-sd-password={{ bacula_storage_daemon_password | regex_replace ('"', '\"') }}"
-      "--with-mon-dir-password={{ bacula_director_monitor_name | regex_replace ('"', '\"') }}"
+      "--with-mon-dir-password={{ bacula_director_monitor_password | regex_replace ('"', '\"') }}"
       "--with-mon-fd-password={{ bacula_file_daemon_monitor_password | regex_replace ('"', '\"') }}"
       "--with-mon-sd-password={{ bacula_storage_daemon_monitor_password | regex_replace ('"', '\"') }}"
     creates: "{{ bacula_source_dir }}/bacula/Makefile"
@@ -54,13 +67,20 @@
     chdir: "{{ bacula_source_dir }}/bacula"
     cmd: >
       ./configure
+      --sbindir=/opt/bacula/etc
+      --sysconfdir=/opt/bacula/etc
+      --with-pid-dir=/opt/bacula/working
+      --with-subsys-dir=/opt/bacula/working
+      --with-working-dir=/opt/bacula/working
       --enable-client-only
       --enable-conio
       --enable-smartalloc
-      --enable-static
       --with-openssl
       --with-systemd
-      --with-fd-password={{ bacula_file_daemon_password | regex_replace ("'", "\\'") }}
+      "--with-dir-password={{ bacula_director_password | regex_replace ('"', '\\"') }}"
+      "--with-fd-password={{ bacula_file_daemon_password | regex_replace ("'", "\\'") }}"
+      "--with-mon-dir-password={{ bacula_director_monitor_password | regex_replace ('"', '\"') }}"
+      "--with-mon-fd-password={{ bacula_file_daemon_monitor_password | regex_replace ('"', '\"') }}"
     creates: "{{ bacula_source_dir }}/bacula/Makefile"
   when: bacula_client
 

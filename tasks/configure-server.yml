@@ -13,7 +13,20 @@
     path: /etc/fstab
     regexp: '\# Backup volume'
     state: present
-    line: "{{ bacula_block_device }} {{ bacula_backup_dir }} ext4 defaults,nosuid,nodev,nofail 0 4    # Backup volume"
+    line: "{{ bacula_block_device }} {{ bacula_backup_dir }} ext4 defaults,nosuid,nodev,nofail,noauto 0 0  # Backup volume"
+
+- name: Configure logrotate
+  copy:
+    remote_src: true
+    src: "{{ bacula_source_dir }}/bacula/scripts/logrotate"
+    dest: "/etc/logrotate.d/bacula"
+
+- name: Configure Postgres to allow md5 auth
+  lineinfile:
+    path: /etc/postgresql/13/main/pg_hba.conf
+    state: present
+    line: "local bacula {{ bacula_database_username }} md5"
+    insertbefore: '# DO NOT DISABLE!'
 
 # - name: Configure Bacula Director
 #   template:
