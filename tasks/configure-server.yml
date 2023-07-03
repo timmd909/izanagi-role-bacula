@@ -1,5 +1,17 @@
 ---
 
+- name: Create bacula group
+  group:
+    name: bacula
+    state: present
+
+- name: Create bacula user
+  user:
+    state: present
+    name: bacula
+    shell: /bin/bash
+    home: '/home/bacula'
+
 - name: Create backup directory
   file:
     path: "{{ bacula_backup_dir }}"
