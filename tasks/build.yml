@@ -43,7 +43,7 @@
     chdir: "{{ bacula_source_dir }}/bacula"
     cmd: >
       ./configure
-      --sbindir=/opt/bacula/etc
+      --sbindir=/opt/bacula/bin
       --sysconfdir=/opt/bacula/etc
       --with-pid-dir=/opt/bacula/working
       --with-subsys-dir=/opt/bacula/working
@@ -67,7 +67,7 @@
     chdir: "{{ bacula_source_dir }}/bacula"
     cmd: >
       ./configure
-      --sbindir=/opt/bacula/etc
+      --sbindir=/opt/bacula/bin
       --sysconfdir=/opt/bacula/etc
       --with-pid-dir=/opt/bacula/working
       --with-subsys-dir=/opt/bacula/working
